@@ -32,7 +32,7 @@ func (c *lru) Read(key int) (value int, isCacheMiss bool) {
 	if node == nil {
 		return 0, true
 	}
-	return node.(*lruNode).value, false
+	return node.value, false
 }
 
 func (c *lru) Write(key, value int) {
@@ -41,7 +41,7 @@ func (c *lru) Write(key, value int) {
 
 // iCache interface
 
-func (c *lru) read(key int) (interface{}) {
+func (c *lru) read(key int) (*lruNode) {
 	if node, exists := c.hash[key]; exists {
 		c.promote(key)
 		return node
@@ -49,21 +49,20 @@ func (c *lru) read(key int) (interface{}) {
 	return nil
 }
 
-func (c *lru) write(key, value int) (interface{}, interface{}) {
+func (c *lru) write(key, value int) (node, evicted *lruNode) {
 	if node, exists := c.hash[key]; exists {
 		node.value = value
 		c.promote(key)
 		return node, nil
 	}
-	node := c.insert(key, value)
-	var evicted *lruNode
+	node = c.insert(key, value)
 	for c.isOverflowing() {
-		evicted = c.remove(c.last.key).(*lruNode)
+		evicted = c.remove(c.last.key)
 	}
 	return node, evicted
 }
 
-func (c *lru) remove(key int) (interface{}) {
+func (c *lru) remove(key int) (*lruNode) {
 	node, found := c.hash[key]
 	if !found {
 		return nil

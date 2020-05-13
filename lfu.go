@@ -21,46 +21,75 @@ func newLFU(size int) *lfu {
 	}
 }
 
-func (l *lfu) Read(key int) (value int, isCacheMiss bool) {
-	node, present := l.hash[key]
-	if !present {
+// The Cache interface
+
+func (c *lfu) Read(key int) (value int, isCacheMiss bool) {
+	node := c.read(key)
+	if node == nil {
 		return 0, true
 	}
-	l.increment(node)
 	return node.value, false
 }
 
-func (l *lfu) Write(key, value int) {
-	if node, present := l.hash[key]; present {
-		node.value = value
-		l.increment(node)
-		return
+func (c *lfu) Write(key, value int) {
+	_, _ = c.write(key, value)
+}
+
+// The iCache interface
+
+func (c *lfu) read(key int) *lfuNode {
+	node, present := c.hash[key]
+	if !present {
+		return nil
 	}
-	node := &lfuNode{
+	c.increment(node)
+	return node
+}
+
+func (c *lfu) write(key, value int) (node, evicted *lfuNode) {
+	if node, present := c.hash[key]; present {
+		node.value = value
+		c.increment(node)
+		return node, nil
+	}
+	node = &lfuNode{
 		key:         key,
 		value:       value,
 		numRequests: 1,
 	}
-	l.hash[key] = node
-	if len(l.heap) >= l.size {
-		l.evict()
+	if len(c.heap) >= c.size {
+		evicted = c.remove(c.heap[len(c.heap) - 1].key)
 	}
-	l.heap = heapPush(l.heap, node)
+	c.hash[key] = node
+	c.heap = heapPush(c.heap, node)
+	return node, evicted
 }
 
 // increment will bump the numRequests property and promote the node in the heap.
 // increment assumes the node is still in the cache.
-func (l *lfu) increment(node *lfuNode) {
+func (c *lfu) increment(node *lfuNode) {
 	node.numRequests++
-	heapBubbleUp(l.heap, node.index)
+	heapBubbleUp(c.heap, node.index)
 }
 
-// evict removes the least frequently requested value from the cache.
-// evict does not check if the cache is over capacity, callers should do that!
-func (l *lfu) evict() {
-	node := l.heap[len(l.heap)-1]
-	delete(l.hash, node.key)
-	l.heap = l.heap[:len(l.heap)-1]
+// remove moves the node corresponding to key to the slot in the heap then
+// bubbles down the interchanged value and resizes the heap.
+func (c *lfu) remove(key int) *lfuNode {
+	node, exists := c.hash[key]
+	if !exists {
+		return nil
+	}
+
+	index, lastIndex := node.index, len(c.heap) - 1
+	c.heap[index], c.heap[lastIndex] = c.heap[lastIndex], c.heap[index]
+	c.heap[index].index = index
+	node.index = lastIndex
+
+	heapBubbleDown(c.heap, index)
+
+	delete(c.hash, node.key)
+	c.heap = c.heap[:lastIndex]
+	return node
 }
 
 // Max heap data structure is modeled as a slice of *lfuNode and maintains the
@@ -87,4 +116,30 @@ func heapBubbleUp(heap []*lfuNode, index int) {
 	heap[parentIndex].index = parentIndex
 	heap[index].index = index
 	heapBubbleUp(heap, parentIndex)
+}
+
+func heapBubbleDown(heap []*lfuNode, parentIndex int) {
+	leftIndex, rightIndex := parentIndex * 2 + 1, parentIndex * 2 + 2
+	maxIndex := getMaxIndex(heap, parentIndex, leftIndex, rightIndex)
+	if maxIndex == parentIndex {
+		return
+	}
+	heap[maxIndex], heap[parentIndex] = heap[parentIndex], heap[maxIndex]
+	heap[parentIndex].index = parentIndex
+	heap[maxIndex].index = maxIndex
+
+	heapBubbleDown(heap, maxIndex)
+}
+
+func getMaxIndex(heap []*lfuNode, parent, left, right int) int {
+	maxIndex := parent
+	for _, i := range([]int{left, right}) {
+		if i >= len(heap) {
+			continue
+		}
+		if (heap[maxIndex].value < heap[i].value) {
+			maxIndex = i
+		}
+	}
+	return maxIndex
 }
