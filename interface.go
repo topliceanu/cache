@@ -21,6 +21,7 @@ type iCache interface {
 	remove(key int) (node interface{})
 }
 
+// To supress the linter
 var _ iCache
 
 const (
@@ -44,8 +45,8 @@ func Factory(algorithm string, size int) Cache {
 		return newLFU(size)
 	case SLRU:
 		return newSLRU(size)
-	//case LFRU:
-	//  return newLFRU(size)
+	case LFRU:
+	  return newLFRU(size)
 	//case ARC:
 	//	return newARC(size)
 	default:
