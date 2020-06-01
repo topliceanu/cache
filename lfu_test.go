@@ -51,5 +51,15 @@ func TestLFU(t *testing.T) {
 		}
 	})
 	t.Run("check cache state after multiple reads and writes", func(t *testing.T) {
+		c := newLFU(2)
+		c.Write(2, 20)
+		c.Write(1, 10)
+		node := c.remove(2)
+		if node.key != 2 || node.value != 20 || len(c.heap) != 1 ||
+		c.heap[0].key != 1 || c.heap[0].value != 10 ||
+		c.heap[0].numRequests != 1 || c.heap[0].index != 0 ||
+		c.hash[1].key != 1 || c.hash[1].value != 10 {
+			t.Fatalf("cache is in an inconsistent state %#v", c.heap)
+		}
 	})
 }

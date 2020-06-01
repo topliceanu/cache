@@ -85,10 +85,10 @@ func (c *lfu) remove(key int) *lfuNode {
 	c.heap[index].index = index
 	node.index = lastIndex
 
-	heapBubbleDown(c.heap, index)
-
 	delete(c.hash, node.key)
 	c.heap = c.heap[:lastIndex]
+	heapBubbleDown(c.heap, index)
+
 	return node
 }
 
