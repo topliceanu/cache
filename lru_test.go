@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -66,6 +67,23 @@ func TestLRU(t *testing.T) {
 		}
 		if len(c.hash) != 2 || c.hash[10] != nil || c.hash[20].value != 200 || c.hash[30].value != 300 {
 			t.Errorf("expected hashtable to have two keys but is %#v", c.hash)
+		}
+	})
+	t.Run(".remove() correctly delete a key in the middle of the linked list", func(t *testing.T) {
+		c := newLRU(3)
+		c.Write(10, 100)
+		c.Write(20, 200)
+		c.Write(30, 300)
+		node := c.remove(20)
+		if node.key != 20 || node.value != 200 {
+			t.Fatalf("expected the correct reeturn value from remove but got %#v", node)
+		}
+		state := c.printable()
+		if !reflect.DeepEqual(state.list, [][]int{ {30, 300}, {10, 100} }) {
+			t.Fatalf("unexpected cache linked list state: %#v", state.list)
+		}
+		if !reflect.DeepEqual(state.hash, map[int]int{ 30: 300, 10: 100 }) {
+			t.Fatalf("unexpected cache map state: %#v", state.hash)
 		}
 	})
 }

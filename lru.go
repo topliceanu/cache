@@ -41,7 +41,7 @@ func (c *lru) Write(key, value int) {
 
 // iCache interface
 
-func (c *lru) read(key int) (*lruNode) {
+func (c *lru) read(key int) *lruNode {
 	if node, exists := c.hash[key]; exists {
 		c.promote(key)
 		return node
@@ -62,7 +62,7 @@ func (c *lru) write(key, value int) (node, evicted *lruNode) {
 	return node, evicted
 }
 
-func (c *lru) remove(key int) (*lruNode) {
+func (c *lru) remove(key int) *lruNode {
 	node, found := c.hash[key]
 	if !found {
 		return nil
@@ -70,17 +70,28 @@ func (c *lru) remove(key int) (*lruNode) {
 	if node == c.head && node == c.last { // only one element in the cache
 		c.head = nil
 		c.last = nil
+		delete(c.hash, node.key)
+		return node
 	}
 	if node == c.head { // it's the head
 		node.next.previous = nil
 		c.head = node.next
 		node.next = nil
+		delete(c.hash, node.key)
+		return node
 	}
 	if node == c.last { // it's the last node
 		c.last = node.previous
 		node.previous.next = nil
 		node.previous = nil
+		delete(c.hash, node.key)
+		return node
 	}
+	// it's not the last nor the first.
+	node.previous.next = node.next
+	node.next.previous = node.previous
+	node.next = nil
+	node.previous = nil
 	delete(c.hash, node.key)
 	return node
 }
@@ -136,4 +147,25 @@ func (c *lru) promote(key int) {
 
 func (c *lru) isOverflowing() bool {
 	return len(c.hash) > c.size
+}
+
+type lruState struct {
+	size int
+	list [][]int
+	hash map[int]int
+}
+
+func (c *lru) printable() lruState {
+	output := lruState{
+		size: c.size,
+		list: [][]int{},
+		hash: make(map[int]int),
+	}
+	for node := c.head; node != nil; node = node.next {
+		output.list = append(output.list, []int{node.key, node.value})
+	}
+	for key, node := range c.hash {
+		output.hash[key] = node.value
+	}
+	return output
 }
