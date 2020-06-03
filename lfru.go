@@ -7,7 +7,7 @@ type lfru struct {
 }
 
 func newLFRU(size int) *lfru {
-	first, second := (size + 1) / 2, size / 2
+	first, second := (size+1)/2, size/2
 	return &lfru{
 		privileged:   newLRU(first),
 		unprivileged: newLFU(second),

@@ -58,7 +58,7 @@ func (c *lfu) write(key, value int) (node, evicted *lfuNode) {
 		numRequests: 1,
 	}
 	if len(c.heap) >= c.size {
-		evicted = c.remove(c.heap[len(c.heap) - 1].key)
+		evicted = c.remove(c.heap[len(c.heap)-1].key)
 	}
 	c.hash[key] = node
 	c.heap = heapPush(c.heap, node)
@@ -80,7 +80,7 @@ func (c *lfu) remove(key int) *lfuNode {
 		return nil
 	}
 
-	index, lastIndex := node.index, len(c.heap) - 1
+	index, lastIndex := node.index, len(c.heap)-1
 	c.heap[index], c.heap[lastIndex] = c.heap[lastIndex], c.heap[index]
 	c.heap[index].index = index
 	node.index = lastIndex
@@ -119,7 +119,7 @@ func heapBubbleUp(heap []*lfuNode, index int) {
 }
 
 func heapBubbleDown(heap []*lfuNode, parentIndex int) {
-	leftIndex, rightIndex := parentIndex * 2 + 1, parentIndex * 2 + 2
+	leftIndex, rightIndex := parentIndex*2+1, parentIndex*2+2
 	maxIndex := getMaxIndex(heap, parentIndex, leftIndex, rightIndex)
 	if maxIndex == parentIndex {
 		return
@@ -133,11 +133,11 @@ func heapBubbleDown(heap []*lfuNode, parentIndex int) {
 
 func getMaxIndex(heap []*lfuNode, parent, left, right int) int {
 	maxIndex := parent
-	for _, i := range([]int{left, right}) {
+	for _, i := range []int{left, right} {
 		if i >= len(heap) {
 			continue
 		}
-		if (heap[maxIndex].value < heap[i].value) {
+		if heap[maxIndex].value < heap[i].value {
 			maxIndex = i
 		}
 	}

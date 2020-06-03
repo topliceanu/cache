@@ -43,7 +43,7 @@ func TestLFU(t *testing.T) {
 		if len(c.heap) != 2 || len(c.hash) != 2 || c.heap[0].key != 1 || c.heap[0].value != 10 ||
 			c.heap[1].key != 3 || c.heap[1].value != 30 || c.heap[1].numRequests != 1 ||
 			c.heap[1].index != 1 {
-				t.Fatalf("cache after another write has incorrect state: #0:%#v #1:%#v", c.heap[0], c.heap[1])
+			t.Fatalf("cache after another write has incorrect state: #0:%#v #1:%#v", c.heap[0], c.heap[1])
 		}
 		actualValue, isCacheMiss = c.Read(2)
 		if isCacheMiss != true || actualValue != 0 {
@@ -56,9 +56,9 @@ func TestLFU(t *testing.T) {
 		c.Write(1, 10)
 		node := c.remove(2)
 		if node.key != 2 || node.value != 20 || len(c.heap) != 1 ||
-		c.heap[0].key != 1 || c.heap[0].value != 10 ||
-		c.heap[0].numRequests != 1 || c.heap[0].index != 0 ||
-		c.hash[1].key != 1 || c.hash[1].value != 10 {
+			c.heap[0].key != 1 || c.heap[0].value != 10 ||
+			c.heap[0].numRequests != 1 || c.heap[0].index != 0 ||
+			c.hash[1].key != 1 || c.hash[1].value != 10 {
 			t.Fatalf("cache is in an inconsistent state %#v", c.heap)
 		}
 	})

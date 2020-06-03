@@ -6,7 +6,7 @@ type slru struct {
 }
 
 func newSLRU(size int) *slru {
-	first, second := (size + 1) / 2, size / 2
+	first, second := (size+1)/2, size/2
 	return &slru{
 		protected: newLRU(first),
 		probation: newLRU(second),

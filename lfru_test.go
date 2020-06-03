@@ -9,25 +9,25 @@ func TestLFRU(t *testing.T) {
 		c := newLFRU(4)
 		c.Write(1, 10)
 		if len(c.privileged.hash) != 0 || len(c.unprivileged.hash) != 1 ||
-		c.unprivileged.hash[1].key != 1 || c.unprivileged.hash[1].value != 10 ||
-		c.unprivileged.hash[1].numRequests != 1 || c.unprivileged.hash[1].index != 0 {
+			c.unprivileged.hash[1].key != 1 || c.unprivileged.hash[1].value != 10 ||
+			c.unprivileged.hash[1].numRequests != 1 || c.unprivileged.hash[1].index != 0 {
 			t.Fatalf("incorrect cache state after first write: %#v", c.unprivileged)
 		}
 		c.Write(2, 20)
 		if len(c.privileged.hash) != 0 || len(c.unprivileged.hash) != 2 ||
-		c.unprivileged.hash[1].key != 1 || c.unprivileged.hash[1].value != 10 ||
-		c.unprivileged.hash[1].numRequests != 1 || c.unprivileged.hash[1].index != 0 ||
-		c.unprivileged.hash[2].key != 2 || c.unprivileged.hash[2].value != 20 ||
-		c.unprivileged.hash[2].numRequests != 1 || c.unprivileged.hash[2].index != 1 {
+			c.unprivileged.hash[1].key != 1 || c.unprivileged.hash[1].value != 10 ||
+			c.unprivileged.hash[1].numRequests != 1 || c.unprivileged.hash[1].index != 0 ||
+			c.unprivileged.hash[2].key != 2 || c.unprivileged.hash[2].value != 20 ||
+			c.unprivileged.hash[2].numRequests != 1 || c.unprivileged.hash[2].index != 1 {
 			t.Fatalf("incorrect cache state after the second write: %#v", c.unprivileged)
 		}
 		value, cacheMiss := c.Read(2)
 		if value != 20 || cacheMiss != false ||
-		len(c.privileged.hash) != 1 || len(c.unprivileged.hash) != 1 ||
-		c.privileged.hash[2].key != 2 || c.privileged.hash[2].value != 20 ||
-		c.privileged.hash[2].next != nil || c.privileged.hash[2].previous != nil ||
-		c.unprivileged.hash[1].key != 1 || c.unprivileged.hash[1].value != 10 ||
-		c.unprivileged.hash[1].numRequests != 1 || c.unprivileged.hash[1].index != 0 {
+			len(c.privileged.hash) != 1 || len(c.unprivileged.hash) != 1 ||
+			c.privileged.hash[2].key != 2 || c.privileged.hash[2].value != 20 ||
+			c.privileged.hash[2].next != nil || c.privileged.hash[2].previous != nil ||
+			c.unprivileged.hash[1].key != 1 || c.unprivileged.hash[1].value != 10 ||
+			c.unprivileged.hash[1].numRequests != 1 || c.unprivileged.hash[1].index != 0 {
 			t.Fatalf("incorrect cache state after the a read: %#v, %#v", c.privileged, c.unprivileged)
 		}
 	})
