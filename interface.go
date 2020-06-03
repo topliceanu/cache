@@ -46,9 +46,9 @@ func Factory(algorithm string, size int) Cache {
 	case SLRU:
 		return newSLRU(size)
 	case LFRU:
-	  return newLFRU(size)
-	//case ARC:
-	//	return newARC(size)
+		return newLFRU(size)
+	case ARC:
+		return newARC(size)
 	default:
 		panic(fmt.Sprintf("unsupported caching algorithm %s", algorithm))
 	}
