@@ -158,7 +158,7 @@ type lruState struct {
 	hash map[int]int
 }
 
-func (c *lru) printable() lruState {
+func (c *lru) state() lruState {
 	output := lruState{
 		size: c.size,
 		list: [][]int{},

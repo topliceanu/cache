@@ -17,8 +17,12 @@ func TestLRU(t *testing.T) {
 		if c.last != nil {
 			t.Errorf("expected last of cache to be nil but is %#v", c.last)
 		}
-		if len(c.hash) != 0 {
-			t.Errorf("expected size of hashtable to be 0 but is %#v", len(c.hash))
+		state := c.state()
+		if len(state.hash) != 0 {
+			t.Errorf("expected size of hash table to be 0 but is %#v", c.hash)
+		}
+		if len(state.list) != 0 {
+			t.Errorf("expected length of linked list to be 0 but got %#v", state.list)
 		}
 	})
 	t.Run("cache with one value has correct state", func(t *testing.T) {
@@ -78,7 +82,7 @@ func TestLRU(t *testing.T) {
 		if node.key != 20 || node.value != 200 {
 			t.Fatalf("expected the correct reeturn value from remove but got %#v", node)
 		}
-		state := c.printable()
+		state := c.state()
 		if !reflect.DeepEqual(state.list, [][]int{ {30, 300}, {10, 100} }) {
 			t.Fatalf("unexpected cache linked list state: %#v", state.list)
 		}

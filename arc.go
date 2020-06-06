@@ -141,13 +141,13 @@ type arcState struct {
 		b2 [][]int
 }
 
-func (a *arc) printable() arcState {
+func (a *arc) state() arcState {
 	return arcState{
 		c: a.c,
 		p: a.p,
-		t1: a.t1.printable().list,
-		t2: a.t2.printable().list,
-		b1: a.b1.printable().list,
-		b2: a.b2.printable().list,
+		t1: a.t1.state().list,
+		t2: a.t2.state().list,
+		b1: a.b1.state().list,
+		b2: a.b2.state().list,
 	}
 }

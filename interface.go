@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Cache is the main interface implemented by all implementations in this project.
+// Cache is the main interface implemented by all strageties in this project.
 type Cache interface {
 	Read(key int) (value int, isCacheMiss bool)
 	Write(key, value int)
@@ -12,6 +12,8 @@ type Cache interface {
 
 // iCache is an internal interface for cache implementations to expose the data structures used.
 // It's helpful for combining different caches into more complex algorithms, like SLRU, LFRU or AR.
+// It's only for documentation purposes, cache implementations will return, for convenience,
+// their respective node types, not interfaces{}.
 type iCache interface {
 	// read and promote if cache hit
 	read(key int) (node interface{})
@@ -19,13 +21,15 @@ type iCache interface {
 	write(key, value int) (node, evicted interface{})
 	// remove a page by key. Nothing happens if key is not found.
 	remove(key int) (node interface{})
+	// expose cache's internal state. Should only be used in tests!
+	state() interface{}
 }
 
-// To supress the linter
+// Supress the linter
 var _ iCache
 
 const (
-	// Cache replacement algorithm names
+	// Cache replacement strategies
 	LRU  = "cache-lru"
 	LFU  = "cache-lfu"
 	MRU  = "cache-mru"
@@ -34,7 +38,7 @@ const (
 	ARC  = "cache-arc"
 )
 
-// Factory produces instances of the requested cache.
+// Factory produces instances of the requested cache replacement strategy.
 func Factory(algorithm string, size int) Cache {
 	switch algorithm {
 	case LRU:
