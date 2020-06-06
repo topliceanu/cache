@@ -86,4 +86,33 @@ func TestLRU(t *testing.T) {
 			t.Fatalf("unexpected cache map state: %#v", state.hash)
 		}
 	})
+	t.Run("head and last pointers are correct", func(t *testing.T) {
+		c := newLRU(3)
+		for idx, tc := range []struct{
+			op string
+			arg int
+			expHeadKey int
+			expLastKey int
+		} {
+			{ "write", 1, 1, 1 },
+			{ "write", 2, 2, 1 },
+			{ "write", 3, 3, 1 },
+			{ "write", 4, 4, 2 },
+			{ "write", 5, 5, 3 },
+			{ "write", 6, 6, 4 },
+			{ "read",  4, 4, 5 },
+			{ "read",  5, 5, 6 },
+			{ "read",  6, 6, 4 },
+		} {
+			if tc.op == "write" {
+				c.Write(tc.arg, tc.arg)
+			} else if tc.op == "read" {
+				_, _ = c.Read(tc.arg)
+			}
+			if c.head.key != tc.expHeadKey || c.last.key != tc.expLastKey {
+				t.Fatalf("incorrect head/last pointers after step %d: %#v %#v", idx, c.head.key, c.last.key)
+			}
+		}
+
+	})
 }
