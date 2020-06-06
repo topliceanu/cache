@@ -101,11 +101,19 @@ func (a *arc) replace(key int) {
 	t1Size := len(a.t1.hash)
 	_, cacheMiss := a.b2.Read(key)
 	if t1Size >= 1 && ((!cacheMiss && t1Size == a.p) || t1Size > a.p) {
-		node := a.t1.remove(a.t1.last.key)
-		a.b1.Write(node.key, node.value)
+		if a.t1.last == nil {
+			return
+		}
+		if node := a.t1.remove(a.t1.last.key); node != nil {
+			a.b1.Write(node.key, node.value)
+		}
 	} else {
-		node := a.t2.remove(a.t2.last.key)
-		a.b2.Write(node.key, node.value)
+		if a.t2.last == nil {
+			return
+		}
+		if node := a.t2.remove(a.t2.last.key); node != nil {
+			a.b2.Write(node.key, node.value)
+		}
 	}
 }
 
