@@ -119,7 +119,10 @@ func (c *lru) insert(key, value int) *lruNode {
 }
 
 func (c *lru) promote(key int) {
-	node := c.hash[key]
+	node, exists := c.hash[key]
+	if !exists {
+		return
+	}
 	if node.previous == nil { // it's the head
 		return
 	}
