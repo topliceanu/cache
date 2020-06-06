@@ -70,8 +70,11 @@ func (m *mru) promote(key int) {
 		return
 	}
 	if node == m.last {
+		m.last = node.previous
+		// detach from previous
 		node.previous.next = nil
 		node.previous = nil
+		// move to head
 		node.next = m.head
 		m.head.previous = node
 		m.head = node
