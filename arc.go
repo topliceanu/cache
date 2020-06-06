@@ -9,8 +9,7 @@ type arc struct {
 
 func newARC(size int) *arc {
 	c := size
-	t1Size, t2Size := c/2, (c+1)/2
-	b1Size, b2Size := c, c
+	t1Size, t2Size, b1Size, b2Size := c/4, (c+1)/4, (c+2)/4, (c+3)/4
 	return &arc{
 		c:  c,
 		p:  0,

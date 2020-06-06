@@ -6,7 +6,7 @@ import (
 
 func TestARC(t *testing.T) {
 	t.Run("it uses the full capacity of the cache", func(t *testing.T) {
-		c := newARC(4)
+		c := newARC(8)
 		c.Write(1, 10)
 		c.Write(2, 20)
 		c.Write(3, 30)
