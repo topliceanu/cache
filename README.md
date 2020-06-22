@@ -1,5 +1,7 @@
 # cache
 
+![gh actions status](https://github.com/topliceanu/cache/workflows/CI%20Workflow/badge.svg)
+
 This repository contains example implementation of various cache replacement strategies.
 It accompanies this blog post [Cache replacement strategies](http://alexandrutopliceanu.ro/)
 
