@@ -1,0 +1,37 @@
+name: "CI Workflow"
+
+on:
+  - push:
+      branches:
+        - master
+jobs:
+  lint:
+    name: "Lint source"
+    runs-on: ubuntu-18.04
+    steps:
+      - name: "Install golang-ci"
+        run: "curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.27.0"
+      - uses: "actions/checkout@v2"
+      - name: "Lint"
+        run: "./script/lint"
+  build:
+    name: "Build binary"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: "actions/checkout@v2"
+      - name: "Build"
+        run: "./script/build"
+  test:
+    name: "Tests"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: "actions/checkout@v2"
+      - name: "Test"
+        run: "./script/test"
+  benchmark:
+    name: "Benchmarks"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: "actions/checkout@v2"
+      - name: "Benchmark"
+        run: "./script/benchmark"
