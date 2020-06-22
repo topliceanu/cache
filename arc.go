@@ -131,23 +131,3 @@ func max(a, b int) int {
 	}
 	return b
 }
-
-type arcState struct {
-		c int
-		p int
-		t1 [][]int
-		t2 [][]int
-		b1 [][]int
-		b2 [][]int
-}
-
-func (a *arc) state() arcState {
-	return arcState{
-		c: a.c,
-		p: a.p,
-		t1: a.t1.state().list,
-		t2: a.t2.state().list,
-		b1: a.b1.state().list,
-		b2: a.b2.state().list,
-	}
-}
