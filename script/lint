@@ -4,4 +4,4 @@ set -euo pipefail
 
 cd "$(dirname "$0")"/..
 
-golangci-lint run
+"$(go env GOPATH)/bin/golangci-lint" run
