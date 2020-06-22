@@ -1,10 +1,7 @@
 name: "CI Workflow"
 
 on: [ push ]
-#on:
-#  - push:
-#      branches:
-#        - master
+
 jobs:
   lint:
     name: "Lint source"
